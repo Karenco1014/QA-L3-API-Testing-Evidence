@@ -1,0 +1,645 @@
+{
+  "info": {
+    "_postman_id": "409a0252-dc12-4af6-8c0a-603af5d4e3af",
+    "name": "QA_L3_API_Testing_Evidence",
+    "description": "Colección de pruebas automatizadas de API REST para demostrar manejo de métodos HTTP, códigos de estado, headers, request y response bodies, variables, parámetros dinámicos y validaciones de esquema JSON.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "30197719"
+  },
+  "item": [
+    {
+      "name": "JSONPlaceholder - CRUD y validaciones.",
+      "item": [
+        {
+          "name": "GET — Validar un recurso inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 404 Not Found\", () => {\n    pm.response.to.have.status(404);\n});\n\npm.test(\"Response time is less than 2000ms\", () => {\n    pm.expect(pm.response.responseTime).to.be.below(2000);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/posts/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts",
+                "999999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET — Consultar un usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Content-Type is application/json\", () => {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "pm.test(\"User ID matches requested ID\", () => {",
+                  "    const body = pm.response.json();",
+                  "    const expectedId = Number(pm.collectionVariables.get(\"user_id\"));",
+                  "    pm.expect(body.id).to.eql(expectedId);",
+                  "});",
+                  "",
+                  "pm.test(\"User follows the expected schema\", () => {",
+                  "    const schema = {",
+                  "        type: \"object\",",
+                  "        required: [\"id\", \"name\", \"username\", \"email\"],",
+                  "        properties: {",
+                  "            id: { type: \"number\" },",
+                  "            name: { type: \"string\" },",
+                  "            username: { type: \"string\" },",
+                  "            email: { type: \"string\" }",
+                  "        }",
+                  "    };",
+                  "    pm.response.to.have.jsonSchema(schema);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 2000ms\", () => {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE — Eliminar una publicación",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 2000ms\", () => {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/posts/{{post_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts",
+                "{{post_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH — Actualizar parcialmente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Content-Type is application/json\", () => {\n    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\n});\n\npm.test(\"Response contains updated title\", () => {\n    const body = pm.response.json();\n    pm.expect(body.title).to.eql(\"QA L3 API Testing - Patched\");\n});\n\npm.test(\"Response time is less than 2000ms\", () => {\n    pm.expect(pm.response.responseTime).to.be.below(2000);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"title\": \"QA L3 API Testing - Patched\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/posts/{{post_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts",
+                "{{post_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT — Reemplazar una publicación",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Content-Type is application/json\", () => {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains updated fields\", () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.title).to.eql(\"QA L3 API Testing - Updated\");",
+                  "    pm.expect(body.body).to.eql(\"Full replacement of post content\");",
+                  "    pm.expect(body.userId).to.eql(1);",
+                  "});",
+                  "",
+                  "pm.test(\"Response follows the expected schema\", () => {",
+                  "    const schema = {",
+                  "        type: \"object\",",
+                  "        required: [\"id\", \"title\", \"body\", \"userId\"],",
+                  "        properties: {",
+                  "            id: { type: \"number\" },",
+                  "            title: { type: \"string\" },",
+                  "            body: { type: \"string\" },",
+                  "            userId: { type: \"number\" }",
+                  "        }",
+                  "    };",
+                  "    pm.response.to.have.jsonSchema(schema);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 2000ms\", () => {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// JSONPlaceholder does not persist POST data.",
+                  "// Reset post_id to a valid existing resource ID before running PUT.",
+                  "pm.collectionVariables.set(\"post_id\", 1);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"title\": \"QA L3 API Testing - Updated\",\"body\": \"Full replacement of post content\",\"userId\": 1}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/posts/{{post_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts",
+                "{{post_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST — Crear una publicación",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"POST returns 201 Created\", () => {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Created post contains expected fields\", () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body).to.have.property(\"id\");",
+                  "    pm.expect(body.title).to.eql(\"QA L3 API Testing\");",
+                  "    pm.expect(body.body).to.eql(\"Automated API validation evidence\");",
+                  "    pm.expect(body.userId).to.eql(1);",
+                  "});",
+                  "",
+                  "pm.test(\"Response content type is JSON\", () => {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "pm.test(\"Response follows the expected schema\", () => {",
+                  "    const schema = {",
+                  "        type: \"object\",",
+                  "        required: [\"id\", \"title\", \"body\", \"userId\"],",
+                  "        properties: {",
+                  "            id: { type: \"number\" },",
+                  "            title: { type: \"string\" },",
+                  "            body: { type: \"string\" },",
+                  "            userId: { type: \"number\" }",
+                  "        }",
+                  "    };",
+                  "    pm.response.to.have.jsonSchema(schema);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 2000ms\", () => {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "const responseBody = pm.response.json();",
+                  "if (responseBody && responseBody.id) {",
+                  "    pm.collectionVariables.set(\"post_id\", responseBody.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"QA L3 API Testing\",\n  \"body\": \"Automated API validation evidence\",\n  \"userId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/posts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET — Consultar comentarios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Content-Type is application/json\", () => {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "pm.test(\"Response body is an array\", () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "pm.test(\"Comments follow the expected schema\", () => {",
+                  "    const schema = {",
+                  "        type: \"array\",",
+                  "        items: {",
+                  "            type: \"object\",",
+                  "            required: [\"postId\", \"id\", \"name\", \"email\", \"body\"],",
+                  "            properties: {",
+                  "                postId: { type: \"number\" },",
+                  "                id: { type: \"number\" },",
+                  "                name: { type: \"string\" },",
+                  "                email: { type: \"string\" },",
+                  "                body: { type: \"string\" }",
+                  "            }",
+                  "        }",
+                  "    };",
+                  "    pm.response.to.have.jsonSchema(schema);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 2000ms\", () => {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/posts/{{post_id}}/comments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts",
+                "{{post_id}}",
+                "comments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET — Filtrar por usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Content-Type is application/json\", () => {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "pm.test(\"Response body is an array\", () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "pm.test(\"All posts belong to the filtered user\", () => {",
+                  "    const body = pm.response.json();",
+                  "    const userId = Number(pm.collectionVariables.get(\"user_id\"));",
+                  "    body.forEach(post => {",
+                  "        pm.expect(post.userId).to.eql(userId);",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test(\"Posts follow the expected schema\", () => {",
+                  "    const schema = {",
+                  "        type: \"array\",",
+                  "        items: {",
+                  "            type: \"object\",",
+                  "            required: [\"userId\", \"id\", \"title\", \"body\"],",
+                  "            properties: {",
+                  "                userId: { type: \"number\" },",
+                  "                id: { type: \"number\" },",
+                  "                title: { type: \"string\" },",
+                  "                body: { type: \"string\" }",
+                  "            }",
+                  "        }",
+                  "    };",
+                  "    pm.response.to.have.jsonSchema(schema);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 2000ms\", () => {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/posts?userId={{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{user_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET — Consultar una publicación",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response ID matches requested ID\", () => {",
+                  "    const body = pm.response.json();",
+                  "    const expectedId = Number(pm.collectionVariables.get(\"post_id\"));",
+                  "    pm.expect(body.id).to.eql(expectedId);",
+                  "});",
+                  "",
+                  "pm.test(\"Post has non-empty title and body\", () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.title).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(body.body).to.be.a(\"string\").and.not.empty;",
+                  "});",
+                  "",
+                  "pm.test(\"Content-Type is application/json\", () => {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "pm.test(\"Post follows the expected schema\", () => {",
+                  "    const schema = {",
+                  "        type: \"object\",",
+                  "        required: [\"userId\", \"id\", \"title\", \"body\"],",
+                  "        properties: {",
+                  "            userId: { type: \"number\" },",
+                  "            id: { type: \"number\" },",
+                  "            title: { type: \"string\" },",
+                  "            body: { type: \"string\" }",
+                  "        }",
+                  "    };",
+                  "    pm.response.to.have.jsonSchema(schema);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 2000ms\", () => {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/posts/{{post_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts",
+                "{{post_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET — Listar publicaciones",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", () => {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", () => {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test(\"Response body is an array\", () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "pm.test(\"Each post follows the expected schema\", () => {",
+                  "    const body = pm.response.json();",
+                  "    const schema = {",
+                  "        type: \"array\",",
+                  "        items: {",
+                  "            type: \"object\",",
+                  "            required: [\"userId\", \"id\", \"title\", \"body\"],",
+                  "            properties: {",
+                  "                userId: { type: \"number\" },",
+                  "                id: { type: \"number\" },",
+                  "                title: { type: \"string\" },",
+                  "                body: { type: \"string\" }",
+                  "            }",
+                  "        }",
+                  "    };",
+                  "    pm.response.to.have.jsonSchema(schema);",
+                  "});",
+                  "",
+                  "pm.test(\"Content-Type is application/json\", () => {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 2000ms\", () => {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "pm.test(\"Response array is not empty\", () => {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.length).to.be.above(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/posts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Initialize variables at the start of each collection run",
+          "pm.collectionVariables.set(\"post_id\", 1);",
+          "pm.collectionVariables.set(\"user_id\", 1);"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://jsonplaceholder.typicode.com"
+    },
+    {
+      "key": "post_id",
+      "value": "1"
+    },
+    {
+      "key": "user_id",
+      "value": "1"
+    }
+  ]
+}
